@@ -1,11 +1,13 @@
 // const express = reuire("express");
 
 import express from "express";
+import bcrypt from 'bcrypt';
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import courseRoutes from "./routes/courseRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjet.js";
 import path from "path";
@@ -31,10 +33,12 @@ app.use(morgan("dev")); // log the requests in the console, for debugging purpos
 
 // apply arcjet rate-limit to all routes
 app.use(async(req,res,next) => {
+    console.log("ARCJET CHECKING REQUEST:", req.path);
     try{
         const decision = await aj.protect(req, { 
             requested:1 //specifies that each request comsumes 1 token
         })
+        console.log("ARCJET DECISION:", decision.conclusion);
 
         if (decision.isDenied()){
             if (decision.reason.isRateLimit())
@@ -64,6 +68,8 @@ app.use(async(req,res,next) => {
 
 // we will use the course route for all the course related route
 app.use("/api/courses", courseRoutes);
+app.use("/api/users", userRoutes);
+
 
 if(process.env.NODE_ENV==="production")
 {
@@ -75,18 +81,31 @@ if(process.env.NODE_ENV==="production")
     })
 }
 
+// app.use("/api/courses", courseRoutes);
+// i think use karna hoga
+// app.use("/users", courseRoutes);
+
 
 async function initDB() {
     try {
         await sql`
+            CREATE TABLE IF NOT EXISTS users (
+                uid SERIAL PRIMARY KEY,
+                name VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `; 
+        await sql`
             CREATE TABLE IF NOT EXISTS courses (
-                id SERIAL PRIMARY KEY,
+                cid SERIAL PRIMARY KEY,
+                uid INT NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
                 title VARCHAR(255) NOT NULL,
                 instructor VARCHAR(255) NOT NULL,
                 category VARCHAR(100) NOT NULL,
                 status VARCHAR(50) DEFAULT 'To-Do', 
-                image VARCHAR(255),
-                resource_url VARCHAR(255),
+                image TEXT,
+                resource_url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `; 
@@ -95,7 +114,6 @@ async function initDB() {
         console.error("DB Init Error:", error);
     }
 }
-
 
 initDB().then(() => {
     app.listen(PORT, () => {

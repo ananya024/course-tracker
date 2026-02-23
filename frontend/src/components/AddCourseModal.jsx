@@ -15,7 +15,7 @@ function AddCourseModal() {
             {/* MODAL HEADER */}
             <h3 className='font-bold text-xl mb-8'>Add New course</h3>
             {/* MODAL FORM */}
-            <form onSubmit={addCourse} className='space-y-6'>
+            <form onSubmit={(e)=>addCourse(e)} className='space-y-6'>
                 <div className="grid gap-6">
                     {/* course title INPUT */}
                     <div className="form-control">
@@ -83,7 +83,7 @@ function AddCourseModal() {
                                 <Text className="size-5" />
                             </div>
                             <input
-                                type="text"
+                                type="url"
                                 placeholder="enter resource_url"
                                 className="input input-bordered w-full pl-10 py-3 focus:input-primary transition-colors duration-200"
                                 value={formData.resource_url}

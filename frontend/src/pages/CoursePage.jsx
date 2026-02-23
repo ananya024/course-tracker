@@ -1,27 +1,27 @@
 import { useEffect } from 'react'
 import { useCourseStore } from '../store/useCourseStore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeftIcon,Trash2Icon , SaveIcon} from 'lucide-react';
+import { ArrowLeftIcon, SaveIcon} from 'lucide-react';
 
 function CoursePage() {
   const { currentCourse, formData, setFormData, loading, error, fetchCourse, updateCourse, deleteCourse } = useCourseStore();
   const navigate = useNavigate();
-  const {id} = useParams();
+  const {uid,cid} = useParams();
 
   useEffect(() => {
-    fetchCourse(id)
-  }, [fetchCourse, id]);
+    fetchCourse(cid)
+  }, [fetchCourse, cid]);
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this Course?")) {
-      await deleteCourse(id);
-      navigate("/");
-    }
-  };
+  // const handleDelete = async () => {
+  //   if (window.confirm("Are you sure you want to delete this Course?")) {
+  //     await deleteCourse(id);
+  //     navigate("/");
+  //   }
+  // };
   
   const handleUpdate = async () => {
     if (window.confirm("Are you sure you want to update this Course?")) {
-      await updateCourse(id);
+      await updateCourse(cid);
       navigate("/");
     }
   };

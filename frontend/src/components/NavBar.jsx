@@ -3,7 +3,7 @@ import { Link, useResolvedPath } from 'react-router-dom'
 import { ComputerIcon, Laptop2Icon } from 'lucide-react';
 import { useCourseStore } from '../store/useCourseStore';
 import ThemeToggle from './ThemeToggle';
-
+import SignOut from '../components/SignOut';
 
 function NavBar() {
   const {pathname}=useResolvedPath();
@@ -14,6 +14,7 @@ function NavBar() {
     <div className='bg-base-100/80 backdrop-blur-lg border-base-content/10 sticky top-0 z-50'>
       <div className="mx-auto max-w-7xl">
         <div className="navbar px-4 min-h-[4rem] justify-between">
+          
           {/* LOGO */}
           <div className="flex-1 lg:flex-none">
             <Link to="/" className="hover:opacity-80 transition-opacity">
@@ -26,6 +27,7 @@ function NavBar() {
               </div>
             </Link>
           </div>
+          
           {/* RIGHT SECTION with dropdown */}
           <div className='flex items-center gap-4'>
             <ThemeToggle/>
@@ -37,8 +39,13 @@ function NavBar() {
                 </div>
               </div>
             )}
+          
+          
+            <SignOut/>
           </div>
-        </div>
+
+
+        </div>        
       </div>
     </div>
   )

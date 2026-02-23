@@ -32,25 +32,28 @@ function CourseCard({course}) {
             <div className="card-actions justify-end mt-4">
             {/* THE TOGGLE BUTTON */}
                 <button 
-                    onClick={() => toggleCourseStatus(course.id)}
+                    onClick={() => toggleCourseStatus(course.cid)}
                     className="btn btn-sm btn-outline btn-primary"
                 >
                     Update Status
                 </button>
             </div>
             <div className={`badge ${getStatusColor(course.status)}`}>{course.status}</div>
+
             {/* CARD ACTIONS */}
             <div className="card-actions justify-end mt-4">
-                <Link to={`/course/${course.id}`} className="btn btn-sm btn-info btn-outline">
+                <Link to={`/course/${course.uid}/${course.cid}`} className="btn btn-sm btn-info btn-outline">
                     <EditIcon className="size-4" />
                 </Link>
+
                 <button 
                     className="btn btn-sm btn-error btn-outline"
-                    onClick = {() => deleteCourse(course.id)}
+                    onClick = {() => deleteCourse(course.cid)}
                 >
                     <Trash2Icon className="size-4" />
                 </button>
             </div>
+
         </div>
     </div>
   );

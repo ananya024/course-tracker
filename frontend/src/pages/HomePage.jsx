@@ -3,25 +3,42 @@ import { useCourseStore } from '../store/useCourseStore';
 import { PlusCircleIcon, RefreshCwIcon,PackageIcon, SearchIcon } from 'lucide-react';
 import CourseCard from '../components/CourseCard';
 import AddCourseModal from '../components/AddCourseModal';
+import { useUserStore } from '../store/useUserStore';
+
 
 function HomePage() {
   const {courses, loading, error, fetchCourses, searchCourse} = useCourseStore();
+  const {currentUser} = useUserStore();
 
-  // useEffect(()=> {fetchCourses();} , [fetchCourses]); //bcoz ab search hai so no need rto rerender each tieme fetch chnages, bcoz search ka useEffect taling care of that
-  useEffect(()=> {fetchCourses();} , []); //[] means render once
+  useEffect(()=>{
+    if (currentUser?.uid) {
+      fetchCourses(currentUser?.uid);
+    }
+  }, [currentUser?.uid, fetchCourses]);
+
+  // useEffect(()=> {fetchCourses(uid);} , [fetchCourses]); //bcoz ab search hai so no need rto rerender each tieme fetch chnages, bcoz search ka useEffect taling care of that
+
+  // useEffect(()=> {
+  //   if(uid)
+  //     fetchCourses(uid);
+  //   } , [uid,fetchCourses]); //[] means render once
+  //   // here rerun if user changes
+  // commented after the multi user feature
+
   const [str, setStr]= useState("");
   // useEffect(()=> {
   //   if (str.trim!=="") 
   //     searchCourse(str); 
   //   else 
-  //     fetchCourses();
+  //     fetchCourses(uid);
   // },[str]);  
+  
   useEffect(()=> {
     const timer = setTimeout(()=> {
       if (str.trim()!=="")
         searchCourse(str);
       else
-        fetchCourses();
+        fetchCourses(currentUser?.uid);
     },500); //waits for 0.5 sec
     return () => clearTimeout(timer);  //clear timer if user not tpye
   }, [str, searchCourse, fetchCourses]);
@@ -38,6 +55,7 @@ function HomePage() {
   
   return(
     <main className='max-w-6xl mx-auto px-4 py-8'>
+      <h1 className="text-2xl font-bold mb-6">Welcome, {currentUser?.name}</h1>
       <div className='flex justify-between items-center mb-8'>
         <button 
           className="btn btn-primary" 
@@ -46,11 +64,12 @@ function HomePage() {
           <PlusCircleIcon className="size-5 mr-2" />
           Add course
         </button>
-        <button className="btn btn-ghost btn-circle" onClick={fetchCourses}>
+        <button className="btn btn-ghost btn-circle" onClick={()=>fetchCourses(currentUser?.uid)}>
+        {/* <button className="btn btn-ghost btn-circle" onClick={fetchCourses}> */}
           <RefreshCwIcon className="size-5" />
         </button>
       </div>
-
+        
       <div className="flex mb-6 items-center px-3 h-10 w-[400px] border border-[#303030] rounded-full bg-base-content/5">
           <input
             type="text"
@@ -63,8 +82,8 @@ function HomePage() {
           
       </div>
       
-      <AddCourseModal />
-      
+      <AddCourseModal/>
+
       <div className="rounded-full hover:bg-base-200 transition-colors">
         <span className="badge indicator-item">To-Do: {todoCount}</span>      
         <span className="badge indicator-item">In Progress: {inProgressCount}</span>      
@@ -96,7 +115,7 @@ function HomePage() {
         ) : (
           <div className="flex flex-col gap-4 max-w-3xl mx-auto">
             {sortedCourses.map((courses) => (
-              <CourseCard key={courses.id} course={courses} />
+              <CourseCard key={courses.cid} course={courses} />
             ))}
           </div>
         )
